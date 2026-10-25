@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<title>Nails by Wenii</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --rosa:#e8598c; --rosa-osc:#b8336a; --rosa-claro:#fde3ee; --rosa-fondo:#fff6f9;
+    --verde:#1f8a4c; --verde-claro:#dff3e6; --texto:#3a2430; --gris:#8a7480; --borde:#f2d3df; --rojo:#c62f3d;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  body{font-family:'Poppins',system-ui,sans-serif;background:var(--rosa-fondo);color:var(--texto);
+       padding-bottom:90px;min-height:100vh}
+  header{position:relative;background:linear-gradient(135deg,var(--rosa),var(--rosa-osc));color:#fff;
+         padding:22px 60px 28px;border-radius:0 0 26px 26px;text-align:center}
+  header h1{font-size:22px;font-weight:700;letter-spacing:.5px}
+  header p{font-size:13px;opacity:.9;margin-top:2px;text-transform:capitalize}
+  #refrescar{position:absolute;top:16px;right:14px;width:40px;height:40px;border-radius:50%;border:0;
+             background:rgba(255,255,255,.22);color:#fff;font-size:20px;cursor:pointer;display:flex;
+             align-items:center;justify-content:center}
+  #refrescar.girando span{animation:g 1s linear infinite;display:inline-block}
+  main{padding:0 16px;max-width:520px;margin:0 auto}
+  .card{background:#fff;border-radius:20px;padding:18px;margin-top:16px;
+        box-shadow:0 4px 18px rgba(184,51,106,.08);border:1px solid var(--borde)}
+  .card h2{font-size:15px;font-weight:600;color:var(--rosa-osc);margin-bottom:12px}
+  .hero{margin-top:-16px;text-align:center}
+  .hero .lbl{font-size:13px;color:var(--gris)}
+  .hero .big{font-size:42px;font-weight:700;color:var(--verde);line-height:1.15}
+  .hero .sub{font-size:13px;color:var(--texto);font-weight:500;margin-top:2px}
+  .semana-card{background:linear-gradient(160deg,#fff 0%,#fff3f8 100%);border:1.5px solid var(--rosa-claro)}
+  .contador{display:flex;align-items:center;gap:14px;background:var(--rosa);color:#fff;border-radius:16px;padding:14px 16px;margin-bottom:12px}
+  .contador .num{font-size:38px;font-weight:700;line-height:1}
+  .contador .txt{font-size:14px;line-height:1.25}
+  .contador .txt small{display:block;opacity:.85;font-size:12px}
+  .desg{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .caja{background:#fff;border:1px solid var(--borde);border-radius:14px;padding:11px 12px}
+  .caja .t{font-size:12px;color:var(--gris)}
+  .caja .v{font-size:18px;font-weight:700;margin-top:2px}
+  .caja.duena .v{color:var(--rosa-osc)}
+  .caja.mia .v{color:var(--verde)}
+  .total-mio{margin-top:10px;background:var(--verde-claro);border-radius:14px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center}
+  .total-mio span{font-size:14px;font-weight:600;color:var(--verde)}
+  .total-mio b{font-size:22px;color:var(--verde)}
+  label{display:block;font-size:13px;font-weight:500;color:var(--gris);margin:12px 0 6px}
+  input,select{width:100%;border:1.5px solid var(--borde);border-radius:14px;padding:13px 14px;
+        font:500 16px 'Poppins';color:var(--texto);background:#fff;outline:none;-webkit-appearance:none;appearance:none}
+  select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9'%3E%3Cpath d='M1 1l6 6 6-6' stroke='%23b8336a' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+         background-repeat:no-repeat;background-position:right 16px center;padding-right:40px}
+  input:focus,select:focus{border-color:var(--rosa)}
+  .monto{font-size:26px;font-weight:700;text-align:center}
+  .dos{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .preview{margin-top:12px;background:var(--verde-claro);color:var(--verde);border-radius:14px;
+           padding:10px;text-align:center;font-size:14px;font-weight:500;display:none}
+  .btn{width:100%;border:0;border-radius:16px;padding:16px;font:600 17px 'Poppins';cursor:pointer;margin-top:16px}
+  .btn-main{background:var(--rosa);color:#fff;box-shadow:0 6px 16px rgba(232,89,140,.35)}
+  .btn:disabled{opacity:.55}
+  .btn-borrar{background:#fff;color:var(--rojo);border:1.5px solid #f3c3c8;margin-top:10px;font-size:15px;padding:13px}
+  .btn-cancel{background:transparent;color:var(--gris);font-size:14px;padding:10px;margin-top:4px}
+  .item{display:flex;justify-content:space-between;align-items:center;padding:11px 4px;border-bottom:1px solid var(--borde);font-size:14px;cursor:pointer}
+  .item:last-child{border-bottom:0}
+  .item small{display:block;color:var(--gris);font-size:12px}
+  .item .der{display:flex;align-items:center;gap:8px}
+  .item .lapiz{color:var(--rosa);font-size:14px}
+  .ayuda{font-size:12px;color:var(--gris);margin:-6px 0 6px}
+  .vacio{color:var(--gris);font-size:14px;text-align:center;padding:8px 0}
+  .semana{background:#fff;border:1px solid var(--borde);border-radius:18px;padding:14px 16px;margin-top:10px}
+  .semana.actual{border:2px solid var(--verde);background:#fbfffc}
+  .semana.futura{opacity:.6}
+  .semana .top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+  .semana .top b{font-size:15px;white-space:nowrap}
+  .semana .top span{font-size:12px;color:var(--gris);text-align:right}
+  .semana .cob{font-size:22px;font-weight:700;color:var(--verde);margin:4px 0 6px}
+  .semana .det{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--gris)}
+  .tag{display:inline-block;background:var(--verde);color:#fff;font-size:11px;border-radius:8px;padding:1px 7px;margin-left:6px;vertical-align:middle}
+  .semana .top .tag{color:#fff}
+  nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--borde);
+      display:flex;padding:8px 10px calc(8px + env(safe-area-inset-bottom));z-index:5}
+  nav button{flex:1;border:0;background:none;font:600 13px 'Poppins';color:var(--gris);padding:8px;border-radius:12px;cursor:pointer}
+  nav button .ic{display:block;font-size:20px}
+  nav button.on{color:var(--rosa-osc);background:var(--rosa-claro)}
+  .vista{display:none}.vista.on{display:block}
+  #fondo{position:fixed;inset:0;background:rgba(58,36,48,.45);display:none;z-index:20}
+  #hoja{position:fixed;left:0;right:0;bottom:0;background:#fff;border-radius:24px 24px 0 0;padding:20px 18px calc(18px + env(safe-area-inset-bottom));
+        transform:translateY(105%);transition:transform .25s;z-index:21;max-width:560px;margin:0 auto}
+  #hoja.abierta{transform:translateY(0)}
+  #hoja h3{font-size:17px;color:var(--rosa-osc);text-align:center}
+  #toast{position:fixed;left:50%;top:18px;transform:translateX(-50%) translateY(-140px);background:var(--texto);
+         color:#fff;padding:12px 18px;border-radius:14px;font-size:14px;transition:transform .3s;z-index:30;max-width:90%;text-align:center}
+  #toast.show{transform:translateX(-50%) translateY(0)}
+  #cargando{position:fixed;inset:0;background:var(--rosa-fondo);display:flex;align-items:center;justify-content:center;
+            flex-direction:column;gap:10px;z-index:40;color:var(--rosa-osc);font-weight:600}
+  .spin{width:34px;height:34px;border:4px solid var(--rosa-claro);border-top-color:var(--rosa);border-radius:50%;animation:g 1s linear infinite}
+  @keyframes g{to{transform:rotate(360deg)}}
+  #pin-pantalla{position:fixed;inset:0;background:linear-gradient(160deg,var(--rosa),var(--rosa-osc));z-index:50;display:none;
+                align-items:center;justify-content:center;padding:24px}
+  #pin-pantalla .caja-pin{background:#fff;border-radius:24px;padding:26px 22px;width:100%;max-width:340px;text-align:center}
+  #pin-pantalla h2{color:var(--rosa-osc);font-size:20px;margin-bottom:4px}
+  #pin-pantalla p{color:var(--gris);font-size:13px;margin-bottom:14px}
+  #pin-input{text-align:center;font-size:26px;letter-spacing:8px;font-weight:700}
+</style>
+</head>
+<body>
+<div id="cargando"><div class="spin"></div>Cargando…</div>
+<div id="pin-pantalla">
+  <div class="caja-pin">
+    <h2>💅 Nails by Wenii</h2>
+    <p>Pon tu PIN para entrar</p>
+    <input id="pin-input" type="password" inputmode="numeric" autocomplete="off" placeholder="••••">
+    <button class="btn btn-main" id="pin-ok">Entrar</button>
+  </div>
+</div>
+<div id="toast"></div>
+
+<header>
+  <h1>💅 Nails by Wenii</h1>
+  <p id="hoy"></p>
+  <button id="refrescar" aria-label="Actualizar"><span>↻</span></button>
+</header>
+
+<main>
+  <section id="v-agregar" class="vista on">
+    <div class="card hero">
+      <div class="lbl" id="h-lbl">💰 Cobras este sábado</div>
+      <div class="big" id="h-cobra">$0.00</div>
+      <div class="sub" id="h-sub"></div>
+    </div>
+
+    <div class="card">
+      <h2>➕ Nuevo servicio</h2>
+      <label>Servicio</label>
+      <select id="servicio"></select>
+      <label>¿Cuánto cobraste?</label>
+      <input id="monto" class="monto" type="number" inputmode="decimal" placeholder="$0" min="0" step="0.01">
+      <div class="dos">
+        <div>
+          <label>Propina</label>
+          <input id="propina" type="number" inputmode="decimal" placeholder="$0" min="0" step="0.01">
+        </div>
+        <div>
+          <label>Fecha</label>
+          <input id="fecha" type="date">
+        </div>
+      </div>
+      <div class="preview" id="preview"></div>
+      <button class="btn btn-main" id="guardar">Guardar ✨</button>
+    </div>
+
+    <div class="card semana-card">
+      <h2>📊 Esta semana</h2>
+      <div class="contador">
+        <div class="num" id="s-num">0</div>
+        <div class="txt"><b id="s-num-txt">servicios</b><small id="s-rango"></small></div>
+      </div>
+      <div class="desg">
+        <div class="caja"><div class="t">Total cobrado</div><div class="v" id="s-total"></div></div>
+        <div class="caja"><div class="t">Propinas</div><div class="v" id="s-propinas"></div></div>
+        <div class="caja duena"><div class="t" id="s-duena-t">Dueña</div><div class="v" id="s-duena"></div></div>
+        <div class="caja mia"><div class="t" id="s-mia-t">Para mí</div><div class="v" id="s-wenii"></div></div>
+      </div>
+      <div class="total-mio"><span>💰 Total para mí</span><b id="s-cobra"></b></div>
+    </div>
+
+    <div class="card">
+      <h2>🧾 Servicios de esta semana</h2>
+      <p class="ayuda">Toca uno para editarlo o eliminarlo</p>
+      <div id="lista"></div>
+    </div>
+  </section>
+
+  <section id="v-semanas" class="vista">
+    <div class="card" style="margin-top:-16px">
+      <label style="margin-top:0">Mes</label>
+      <select id="mes-sel"></select>
+    </div>
+    <div class="card hero" style="margin-top:12px">
+      <div class="lbl" id="m-lbl"></div>
+      <div class="big" id="m-cobra">$0.00</div>
+      <div class="sub" id="m-det"></div>
+    </div>
+    <div id="lista-semanas"></div>
+  </section>
+</main>
+
+<nav>
+  <button class="on" data-v="agregar"><span class="ic">💅</span>Inicio</button>
+  <button data-v="semanas"><span class="ic">📅</span>Semanas</button>
+</nav>
+
+<div id="fondo"></div>
+<div id="hoja">
+  <h3>✏️ Editar servicio</h3>
+  <label>Servicio</label>
+  <select id="e-servicio"></select>
+  <label>Monto</label>
+  <input id="e-monto" class="monto" type="number" inputmode="decimal" min="0" step="0.01">
+  <div class="dos">
+    <div><label>Propina</label><input id="e-propina" type="number" inputmode="decimal" min="0" step="0.01" placeholder="$0"></div>
+    <div><label>Fecha</label><input id="e-fecha" type="date"></div>
+  </div>
+  <button class="btn btn-main" id="e-guardar">Guardar cambios</button>
+  <button class="btn btn-borrar" id="e-borrar">🗑 Eliminar servicio</button>
+  <button class="btn btn-cancel" id="e-cancelar">Cancelar</button>
+</div>
+
+<script>
+  // 🔗 Link de tu Apps Script (termina en /exec)
+  const API_URL = 'https://script.google.com/macros/s/AKfycbyCMjEDi-aZBYVyzD8-KhI3hv0z5wcsygQK5Bt5k4ubYujCqseXgraqG6YeS4FjD_7P/exec';
+
+  function leerPin(){ try { return localStorage.getItem('pin_wenii') || ''; } catch (e) { return window._pin || ''; } }
+  function guardarPin(p){ window._pin = p; try { localStorage.setItem('pin_wenii', p); } catch (e) {} }
+  function borrarPin(){ window._pin = ''; try { localStorage.removeItem('pin_wenii'); } catch (e) {} }
+
+  function api(accion, datos){
+    return fetch(API_URL, { method: 'POST', body: JSON.stringify({ accion: accion, datos: datos, pin: leerPin() }) })
+      .then(r => r.json())
+      .then(j => {
+        if (!j.ok) {
+          if (j.error === 'PIN incorrecto') { borrarPin(); pedirPin('PIN incorrecto, intenta otra vez'); }
+          throw new Error(j.error);
+        }
+        return j.data;
+      });
+  }
+
+  function pedirPin(msg){
+    document.getElementById('cargando').style.display = 'none';
+    document.getElementById('pin-pantalla').style.display = 'flex';
+    if (msg) document.querySelector('#pin-pantalla p').textContent = msg;
+    setTimeout(() => document.getElementById('pin-input').focus(), 100);
+  }
+
+  const MESES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  const DIAS = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+  let D = null, editando = null, mesElegido = null;
+  const $ = id => document.getElementById(id);
+  const dinero = n => (Number(n) || 0).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+  const partes = s => s.split('-').map(Number);
+
+  function hoyISO(){
+    const d = new Date();
+    return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  }
+  function rango(lunes, sabado){
+    const a = partes(lunes), b = partes(sabado);
+    return a[1] === b[1] ? MESES[a[1]-1] + ' ' + a[2] + ' al ' + b[2]
+                         : MESES[a[1]-1] + ' ' + a[2] + ' al ' + MESES[b[1]-1] + ' ' + b[2];
+  }
+  function rangoLargo(lunes, sabado){
+    const a = partes(lunes), b = partes(sabado);
+    return a[1] === b[1] ? 'Semana de ' + MESES[a[1]-1] + ' del ' + a[2] + ' al ' + b[2]
+                         : 'Semana del ' + a[2] + ' de ' + MESES[a[1]-1] + ' al ' + b[2] + ' de ' + MESES[b[1]-1];
+  }
+  function diaCorto(iso){
+    const p = partes(iso); const d = new Date(Date.UTC(p[0], p[1]-1, p[2]));
+    return DIAS[d.getUTCDay()] + ' ' + p[2];
+  }
+  const plural = n => n === 1 ? 'servicio' : 'servicios';
+  const esc = t => String(t).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+  function toast(msg){
+    const t = $('toast'); t.textContent = msg; t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2600);
+  }
+  function fallo(e){
+    $('cargando').style.display = 'none';
+    $('refrescar').classList.remove('girando');
+    ['guardar','e-guardar','e-borrar'].forEach(id => $(id).disabled = false);
+    $('guardar').textContent = 'Guardar ✨';
+    toast('⚠️ ' + (e && e.message ? e.message : e));
+  }
+
+  function llenarServicios(sel, valor){
+    sel.innerHTML = (valor === undefined ? '<option value="">Elige el servicio…</option>' : '') +
+      D.servicios.map(s => '<option' + (s === valor ? ' selected' : '') + '>' + esc(s) + '</option>').join('');
+    if (valor && D.servicios.indexOf(valor) < 0)
+      sel.insertAdjacentHTML('afterbegin', '<option selected>' + esc(valor) + '</option>');
+  }
+
+  function pintar(d){
+    D = d;
+    const pct = d.pct, s = d.semana;
+    $('hoy').textContent = new Date().toLocaleDateString('es-US', { weekday:'long', day:'numeric', month:'long' });
+
+    if ($('servicio').options.length !== d.servicios.length + 1) llenarServicios($('servicio'));
+
+    $('h-lbl').textContent = d.esDomingo ? '💰 Cobraste este sábado' : '💰 Cobras este sábado';
+    $('h-cobra').textContent = dinero(s.cobra);
+    $('h-sub').textContent = rangoLargo(s.lunes, s.sabado) + ' - ' + s.servicios + ' ' + plural(s.servicios);
+
+    $('s-num').textContent = s.servicios;
+    $('s-num-txt').textContent = plural(s.servicios) + ' esta semana';
+    $('s-rango').textContent = rango(s.lunes, s.sabado);
+    $('s-total').textContent = dinero(s.total);
+    $('s-propinas').textContent = dinero(s.propinas);
+    $('s-duena-t').textContent = 'Dueña (' + Math.round((1-pct)*100) + '%)';
+    $('s-duena').textContent = dinero(s.duena);
+    $('s-mia-t').textContent = 'Para mí (' + Math.round(pct*100) + '%)';
+    $('s-wenii').textContent = dinero(s.wenii);
+    $('s-cobra').textContent = dinero(s.cobra);
+
+    const L = $('lista');
+    if (!s.trans.length) L.innerHTML = '<div class="vacio">Todavía no hay servicios esta semana</div>';
+    else L.innerHTML = s.trans.map((t, i) =>
+      '<div class="item" data-i="' + i + '"><div>' + esc(t.servicio) +
+      '<small>' + diaCorto(t.fecha) + (t.propina ? ' · propina ' + dinero(t.propina) : '') + '</small></div>' +
+      '<div class="der"><b>' + dinero(t.monto) + '</b><span class="lapiz">✏️</span></div></div>').join('');
+    L.querySelectorAll('.item').forEach(el => el.onclick = () => abrirEditor(s.trans[Number(el.dataset.i)]));
+
+    const sel = $('mes-sel');
+    if (!mesElegido || !d.meses.some(m => m.key === mesElegido)) mesElegido = d.mesActual;
+    sel.innerHTML = d.meses.map(m => '<option value="' + m.key + '"' + (m.key === mesElegido ? ' selected' : '') + '>' +
+      MESES[m.mes-1] + ' ' + m.anio + '</option>').join('');
+    pintarMes();
+
+    $('cargando').style.display = 'none';
+    $('refrescar').classList.remove('girando');
+  }
+
+  function pintarMes(){
+    const m = D.meses.find(x => x.key === mesElegido); if (!m) return;
+    $('m-lbl').textContent = '💰 Para mí en ' + MESES[m.mes-1] + ' ' + m.anio;
+    $('m-cobra').textContent = dinero(m.cobra);
+    $('m-det').textContent = m.servicios + ' ' + plural(m.servicios) + ' · Total ' + dinero(m.total) + ' · Dueña ' + dinero(m.duena);
+    $('lista-semanas').innerHTML = m.semanas.map(w => {
+      const actual = w.lunes === D.semana.lunes, futura = w.lunes > D.semana.lunes;
+      return '<div class="semana' + (actual ? ' actual' : '') + (futura ? ' futura' : '') + '">' +
+        '<div class="top"><b>Semana ' + w.numero + (actual ? '<span class="tag">esta semana</span>' : '') + '</b>' +
+        '<span>' + rango(w.lunes, w.sabado) + '</span></div>' +
+        '<div class="cob">' + dinero(w.cobra) + '</div>' +
+        '<div class="det"><span>' + w.servicios + ' serv.</span><span>Total ' + dinero(w.total) +
+        '</span><span>Dueña ' + dinero(w.duena) + '</span><span>Propinas ' + dinero(w.propinas) + '</span></div></div>';
+    }).join('');
+  }
+  $('mes-sel').onchange = e => { mesElegido = e.target.value; pintarMes(); };
+
+  function actualizarPreview(){
+    const m = parseFloat($('monto').value) || 0, p = parseFloat($('propina').value) || 0, pv = $('preview');
+    const pct = D ? D.pct : 0.6;
+    if (m > 0){ pv.style.display = 'block'; pv.textContent = 'Para mí ' + dinero(m * pct + p) + '  ·  Dueña ' + dinero(m * (1 - pct)); }
+    else pv.style.display = 'none';
+  }
+  ['monto','propina'].forEach(id => $(id).addEventListener('input', actualizarPreview));
+
+  function cargar(){
+    if (!leerPin()) return pedirPin();
+    $('refrescar').classList.add('girando');
+    api('cargar').then(pintar).catch(fallo);
+  }
+  $('pin-ok').onclick = () => {
+    const p = $('pin-input').value.trim();
+    if (!p) return;
+    guardarPin(p);
+    $('pin-pantalla').style.display = 'none';
+    $('pin-input').value = '';
+    $('cargando').style.display = 'flex';
+    cargar();
+  };
+  $('pin-input').addEventListener('keydown', e => { if (e.key === 'Enter') $('pin-ok').click(); });
+  $('refrescar').onclick = cargar;
+
+  $('guardar').onclick = () => {
+    const m = parseFloat($('monto').value);
+    if (!$('servicio').value) return toast('Elige un servicio 💅');
+    if (!(m > 0)) return toast('Pon cuánto cobraste 💵');
+    const data = { fecha: $('fecha').value || hoyISO(), servicio: $('servicio').value, monto: m, propina: $('propina').value };
+    $('guardar').disabled = true; $('guardar').textContent = 'Guardando…';
+    api('guardar', data).then(d => {
+      $('guardar').disabled = false; $('guardar').textContent = 'Guardar ✨';
+      toast('✅ ' + data.servicio + ' guardado');
+      $('monto').value = ''; $('propina').value = ''; $('fecha').value = hoyISO(); $('servicio').value = '';
+      actualizarPreview(); pintar(d);
+    }).catch(fallo);
+  };
+
+  function abrirEditor(t){
+    editando = t;
+    llenarServicios($('e-servicio'), t.servicio);
+    $('e-monto').value = t.monto;
+    $('e-propina').value = t.propina || '';
+    $('e-fecha').value = t.fecha;
+    $('fondo').style.display = 'block';
+    requestAnimationFrame(() => $('hoja').classList.add('abierta'));
+  }
+  function cerrarEditor(){
+    $('hoja').classList.remove('abierta');
+    setTimeout(() => $('fondo').style.display = 'none', 250);
+    editando = null;
+  }
+  $('fondo').onclick = cerrarEditor;
+  $('e-cancelar').onclick = cerrarEditor;
+
+  function base(){
+    return { fila: editando.fila, fechaOriginal: editando.fecha, servicioOriginal: editando.servicio, montoOriginal: editando.monto };
+  }
+  $('e-guardar').onclick = () => {
+    const m = parseFloat($('e-monto').value);
+    if (!(m > 0)) return toast('Pon el monto 💵');
+    const t = Object.assign(base(), { servicio: $('e-servicio').value, monto: m, propina: $('e-propina').value, fecha: $('e-fecha').value });
+    $('e-guardar').disabled = true;
+    api('editar', t).then(d => {
+      $('e-guardar').disabled = false; cerrarEditor(); toast('✅ Cambios guardados'); pintar(d);
+    }).catch(fallo);
+  };
+  $('e-borrar').onclick = () => {
+    if (!confirm('¿Eliminar ' + editando.servicio + ' de ' + dinero(editando.monto) + '?')) return;
+    $('e-borrar').disabled = true;
+    api('eliminar', base()).then(d => {
+      $('e-borrar').disabled = false; cerrarEditor(); toast('🗑 Servicio eliminado'); pintar(d);
+    }).catch(fallo);
+  };
+
+  document.querySelectorAll('nav button').forEach(b => b.onclick = () => {
+    document.querySelectorAll('nav button').forEach(x => x.classList.toggle('on', x === b));
+    document.querySelectorAll('.vista').forEach(v => v.classList.toggle('on', v.id === 'v-' + b.dataset.v));
+    window.scrollTo(0,0);
+  });
+
+  $('fecha').value = hoyISO();
+  cargar();
+</script>
+</body>
+</html>
